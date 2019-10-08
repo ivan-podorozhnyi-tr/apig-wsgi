@@ -1,0 +1,8 @@
+{
+  "dev": {
+    "s3_bucket": "zappa.overview",
+    "app_function": "app.app",
+    "profile_name": "sychsergiy",
+  }
+}
+
