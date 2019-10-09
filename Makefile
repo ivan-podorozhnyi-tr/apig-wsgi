@@ -1,3 +1,5 @@
+lambda_name=hello-world-apig-wsgi
+
 # Example:
 libs/: requirements.txt requirements-test.txt
   $@   # refers to target: "libs/"
@@ -8,15 +10,15 @@ libs: requirements.txt
 	@[ -d $@ ] || mkdir $@
 		pip install -r $< -t $@
 
-output.zip: libs
+build: libs
 	zip -r $@ *.py # zip all python source code into output.zip
 	cd $< &&  zip -rm ../$@ * # zip libraries installed in the libs dir into output.zip
 	rmdir libs
 
 
-deploy: output.zip
+deploy: build
 	-aws lambda update-function-code \
-		--function-name hello-world-apig-wsgi \
+		--function-name {lambda_name} \
 		--zip-file fileb://$<
 
 clean:

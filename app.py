@@ -9,4 +9,4 @@ def hello_world():
     return 'Hello World!'
 
 
-alb_lambda_handler = make_lambda_handler(app)
+lambda_handler = make_lambda_handler(app)
