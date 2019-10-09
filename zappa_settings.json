@@ -1,8 +1,10 @@
 {
-  "dev": {
-    "s3_bucket": "zappa.overview",
-    "app_function": "app.app",
-    "profile_name": "sychsergiy",
-  }
+    "dev": {
+        "app_function": "app.app",
+        "aws_region": "eu-central-1",
+        "profile_name": "sychsergiy",
+        "project_name": "zappaoverview",
+        "runtime": "python3.6",
+        "s3_bucket": "zappa.overview",
+    }
 }
-
