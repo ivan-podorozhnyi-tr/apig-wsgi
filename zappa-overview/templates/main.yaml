@@ -1,3 +1,76 @@
 Resources:
-  HelloBucket:
-    Type: AWS::S3::Bucket
+  ALBLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt 'LambdaHandler.Arn'
+      Principal: elasticloadbalancing.amazonaws.com
+
+  ALB:
+    DependsOn:
+      - ALBLambdaPermission
+      - LambdaHandler
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      IpAddressType: ipv4
+      Name: apig-wsgi-alb
+      Scheme: internet-facing
+      SecurityGroups:
+        - sg-7431eb17
+      Subnets:
+        - subnet-23e73349
+        - subnet-568e8d2b
+        - subnet-c8e7f185
+      Type: application
+
+  ALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: False
+      Name: ALBTargetGroup
+      Targets:
+        - Id: !Sub ${LambdaHandler.Arn}
+      TargetType: lambda
+
+  LambdaHandler:
+    Properties:
+      Code:
+        ZipFile: |
+          from apig_wsgi import make_lambda_handler
+          from flask import Flask
+          app = Flask(__name__)
+          @app.route('/browse/hello')
+          def hello_world():
+              return 'Hello World!'
+          lambda_handler = make_lambda_handler(app)
+      Description: test lambda with Flask WSGI applicatio triggered by ALB
+      Handler: app.lambda_handler
+      Role: !GetAtt 'LambdaHandlerRole.Arn'
+      Runtime: python3.6
+      Timeout: 2
+    Type: AWS::Lambda::Function
+
+  LambdaHandlerRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Path: /
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:GetLogEvents
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - arn:aws:logs:*:*:*
+          PolicyName: CloudwatchLogs
+    Type: AWS::IAM::Role
