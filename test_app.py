@@ -1,6 +1,6 @@
 import pytest
 
-from app import alb_lambda_handler, app as flask_app
+from app import lambda_handler, app as flask_app
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def elb_event():
 
 
 def test_app_lambda_handler(elb_event):
-    response = alb_lambda_handler(elb_event, {})
+    response = lambda_handler(elb_event, {})
     assert response["body"] == "Hello World!"
 
 
