@@ -6,19 +6,19 @@ Resources:
       FunctionName: !GetAtt 'LambdaHandler.Arn'
       Principal: elasticloadbalancing.amazonaws.com
 
-  ALBLambdaPermission2:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !GetAtt 'LambdaHandler2.Arn'
-      Principal: elasticloadbalancing.amazonaws.com
+#  ALBLambdaPermission2:
+#    Type: AWS::Lambda::Permission
+#    Properties:
+#      Action: lambda:InvokeFunction
+#      FunctionName: !GetAtt 'LambdaHandler2.Arn'
+#      Principal: elasticloadbalancing.amazonaws.com
 
   ALB:
     DependsOn:
       - ALBLambdaPermission
-      - ALBLambdaPermission2
+#      - ALBLambdaPermission2
       - LambdaHandler
-      - LambdaHandler2
+#      - LambdaHandler2
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       IpAddressType: ipv4
@@ -41,14 +41,14 @@ Resources:
         - Id: !Sub ${LambdaHandler.Arn}
       TargetType: lambda
 
-  ALBTargetGroup2:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckEnabled: False
-      Name: ALBTargetGroup2
-      Targets:
-        - Id: !Sub ${LambdaHandler2.Arn}
-      TargetType: lambda
+#  ALBTargetGroup2:
+#    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+#    Properties:
+#      HealthCheckEnabled: False
+#      Name: ALBTargetGroup2
+#      Targets:
+#        - Id: !Sub ${LambdaHandler2.Arn}
+#      TargetType: lambda
 
   LambdaHandler:
     Properties:
@@ -68,23 +68,23 @@ Resources:
       Timeout: 2
     Type: AWS::Lambda::Function
 
-  LambdaHandler2:
-    Properties:
-      Code:
-        ZipFile: |
-          from apig_wsgi import make_lambda_handler
-          from flask import Flask
-          app = Flask(__name__)
-          @app.route('/browse/bye')
-          def bye():
-              return 'Bye!'
-          lambda_handler = make_lambda_handler(app)
-      Description: test lambda with Flask WSGI applicatio triggered by ALB
-      Handler: app.lambda_handler
-      Role: !GetAtt 'LambdaHandlerRole.Arn'
-      Runtime: python3.6
-      Timeout: 2
-    Type: AWS::Lambda::Function
+#  LambdaHandler2:
+#    Properties:
+#      Code:
+#        ZipFile: |
+#          from apig_wsgi import make_lambda_handler
+#          from flask import Flask
+#          app = Flask(__name__)
+#          @app.route('/browse/bye')
+#          def bye():
+#              return 'Bye!'
+#          lambda_handler = make_lambda_handler(app)
+#      Description: test lambda with Flask WSGI applicatio triggered by ALB
+#      Handler: app.lambda_handler
+#      Role: !GetAtt 'LambdaHandlerRole.Arn'
+#      Runtime: python3.6
+#      Timeout: 2
+#    Type: AWS::Lambda::Function
 
   LambdaHandlerRole:
     Properties:
